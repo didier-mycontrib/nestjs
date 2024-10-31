@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { News } from './news.itf';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { NewsDoc } from './news.schema.doc';
-import { NewsDto } from './news.dto';
+import { NewsDoc } from './news.schema';
 
 @Injectable()
 export class NewsService {
@@ -18,24 +17,24 @@ export class NewsService {
     ){}
 
     async findAll():Promise<News[]>{
-        return this.newsModel.find();
+        return this.newsModel.find().exec();
     }
 
     async findOne(id: string):Promise<News|null>{
-        return await this.newsModel.findOne({ _id: id});
+        return this.newsModel.findOne({ _id: id}).exec();
     }
 
     async create(news: News): Promise<News> {
         const persistentNewsEntity = new this.newsModel(news);
-        return await persistentNewsEntity.save();
+        return persistentNewsEntity.save();
     }
 
       async delete(id: string): Promise<any>{
-        return await this.newsModel.findByIdAndDelete(id);
+        return this.newsModel.findByIdAndDelete(id);
       }
 
       async update(id: string, news: News): Promise<News|null> {
-        return await this.newsModel.findByIdAndUpdate( id, news, { new: true });
+        return this.newsModel.findByIdAndUpdate( id, news, { new: true });
       }
 
 }

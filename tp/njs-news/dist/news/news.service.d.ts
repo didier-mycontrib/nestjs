@@ -1,6 +1,6 @@
 import { News } from './news.itf';
 import { Model } from 'mongoose';
-import { NewsDoc } from './news.schema.doc';
+import { NewsDoc } from './news.schema';
 export declare class NewsService {
     private readonly newsModel;
     constructor(newsModel: Model<NewsDoc>);

@@ -14,8 +14,18 @@ export class AppController {
 
 
   @Get()
+  getApiDescription(): string {
+    //return this.appService.getApiDescription();
+    return this.appService.getHtmlApiDescription();
+  }
+
+ 
+
+/*
+  @Get()
   getMainMenu(): string {
     return this.appService.getHtmlAppMainMenu();
   }
-  
+*/
+
 }

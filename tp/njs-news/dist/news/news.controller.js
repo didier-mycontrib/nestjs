@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const news_service_1 = require("./news.service");
 const news_dto_1 = require("./news.dto");
 const message_1 = require("../common/message");
+const news_mapper_1 = require("./news.mapper");
 let NewsController = class NewsController {
     constructor(newsService) {
         this.newsService = newsService;
@@ -25,13 +26,15 @@ let NewsController = class NewsController {
         let news = await this.newsService.findOne(id);
         if (news == undefined)
             throw new common_1.HttpException('news not found with id=' + id, common_1.HttpStatus.NOT_FOUND);
-        return news;
+        return (0, news_mapper_1.toNewsDto)(news);
     }
-    getNewsByCriteria() {
-        return this.newsService.findAll();
+    async getNewsByCriteria() {
+        const newsArray = await this.newsService.findAll();
+        return (0, news_mapper_1.toNewsDtoArray)(newsArray);
     }
-    create(news) {
-        return this.newsService.create(news);
+    async create(news) {
+        const createadNews = await this.newsService.create(news);
+        return (0, news_mapper_1.toNewsDto)(createadNews);
     }
     async delete(id) {
         let deleteOk = await this.newsService.delete(id);
@@ -41,10 +44,10 @@ let NewsController = class NewsController {
             return new message_1.Message("news with id=" + id + " is now deleted");
     }
     async update(newsToUpdate, id) {
-        let news = await this.newsService.update(id, newsToUpdate);
-        if (news == undefined)
+        let updatedNews = await this.newsService.update(id, newsToUpdate);
+        if (updatedNews == undefined)
             throw new common_1.HttpException('not existing news to update with id=' + id, common_1.HttpStatus.NOT_FOUND);
-        return news;
+        return (0, news_mapper_1.toNewsDto)(updatedNews);
     }
 };
 exports.NewsController = NewsController;
@@ -80,7 +83,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [news_dto_1.NewsDto, String]),
     __metadata("design:returntype", Promise)
 ], NewsController.prototype, "update", null);
 exports.NewsController = NewsController = __decorate([

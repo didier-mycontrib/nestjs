@@ -13,14 +13,22 @@ const app_service_1 = require("./app.service");
 const news_service_1 = require("./news/news.service");
 const news_controller_1 = require("./news/news.controller");
 const mongoose_1 = require("@nestjs/mongoose");
-const news_schema_doc_1 = require("./news/news.schema.doc");
+const news_schema_1 = require("./news/news.schema");
+const serve_static_1 = require("@nestjs/serve-static");
+const path_1 = require("path");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forRoot('mongodb://localhost:27017/news'),
-            mongoose_1.MongooseModule.forFeature([{ name: "News", schema: news_schema_doc_1.NewsSchema }])],
+        imports: [
+            serve_static_1.ServeStaticModule.forRoot({
+                rootPath: (0, path_1.join)(__dirname, '..', 'public'),
+                exclude: ['/news-api/(.*)'],
+            }),
+            mongoose_1.MongooseModule.forRoot('mongodb://localhost:27017/news'),
+            mongoose_1.MongooseModule.forFeature([{ name: "News", schema: news_schema_1.NewsSchema }]),
+        ],
         controllers: [app_controller_1.AppController, news_controller_1.NewsController],
         providers: [app_service_1.AppService, news_service_1.NewsService],
     })

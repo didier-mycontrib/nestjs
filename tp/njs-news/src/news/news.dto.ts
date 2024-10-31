@@ -4,7 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 export class NewsDto{
 
     @ApiProperty()
-    public id: string;
+    public id?: string;
 
     @ApiProperty()
     public title: string;
@@ -13,9 +13,9 @@ export class NewsDto{
     public text : string;
         
     @ApiProperty()
-    public timestamp : string;
+    public timestamp? : string;
 
-    constructor(id: string,title: string, text : string, timestamp : string){
+    constructor(id: string|undefined,title: string, text : string, timestamp : string|undefined){
         this.id=id; this.title=title; this.text=text; this.timestamp=timestamp;
     }
 }

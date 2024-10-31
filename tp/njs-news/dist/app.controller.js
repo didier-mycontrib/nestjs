@@ -16,8 +16,8 @@ let AppController = class AppController {
     constructor(appService) {
         this.appService = appService;
     }
-    getMainMenu() {
-        return this.appService.getHtmlAppMainMenu();
+    getApiDescription() {
+        return this.appService.getHtmlApiDescription();
     }
 };
 exports.AppController = AppController;
@@ -26,7 +26,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
-], AppController.prototype, "getMainMenu", null);
+], AppController.prototype, "getApiDescription", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService])

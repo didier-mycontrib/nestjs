@@ -21,20 +21,20 @@ let NewsService = class NewsService {
         this.newsModel = newsModel;
     }
     async findAll() {
-        return this.newsModel.find();
+        return this.newsModel.find().exec();
     }
     async findOne(id) {
-        return await this.newsModel.findOne({ _id: id });
+        return this.newsModel.findOne({ _id: id }).exec();
     }
     async create(news) {
         const persistentNewsEntity = new this.newsModel(news);
-        return await persistentNewsEntity.save();
+        return persistentNewsEntity.save();
     }
     async delete(id) {
-        return await this.newsModel.findByIdAndDelete(id);
+        return this.newsModel.findByIdAndDelete(id);
     }
     async update(id, news) {
-        return await this.newsModel.findByIdAndUpdate(id, news, { new: true });
+        return this.newsModel.findByIdAndUpdate(id, news, { new: true });
     }
 };
 exports.NewsService = NewsService;

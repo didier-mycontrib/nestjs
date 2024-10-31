@@ -6,6 +6,29 @@ export class AppService {
     return 'Hello World!';
   }
 
+  getApiDescription(): string {
+    return 'news-api : REST api for getting news';
+  }
+
+  getHtmlApiDescription(): string {
+    return `
+    <html>
+    <head>
+       <title>news-api</title>
+    </head>
+    <body>
+      <h1>news-api</h1>
+      <hr/>
+      <pre>
+         REST api for getting news
+      <pre/>
+    </body>
+    </html>
+    `;
+  }
+
+  /*
+  //now replaced by ServeStaticModule ...
   getHtmlAppMainMenu():string{
     return `
     <html>
@@ -22,4 +45,5 @@ export class AppService {
     </html>
     `;
   }
+  */
 }

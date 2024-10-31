@@ -1,12 +1,11 @@
 import { NewsService } from './news.service';
 import { NewsDto } from './news.dto';
-import { News } from './news.itf';
 export declare class NewsController {
     private readonly newsService;
     constructor(newsService: NewsService);
-    getNewsById(id: string): Promise<News | undefined>;
-    getNewsByCriteria(): Promise<News[]>;
-    create(news: NewsDto): Promise<News | undefined>;
+    getNewsById(id: string): Promise<NewsDto>;
+    getNewsByCriteria(): Promise<NewsDto[]>;
+    create(news: NewsDto): Promise<NewsDto>;
     delete(id: string): Promise<any>;
-    update(newsToUpdate: News, id: string): Promise<News | undefined>;
+    update(newsToUpdate: NewsDto, id: string): Promise<NewsDto>;
 }

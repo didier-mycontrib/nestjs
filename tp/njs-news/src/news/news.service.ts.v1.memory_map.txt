@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { NewsDto } from './news.dto';
 import { News } from './news.itf';
 
 @Injectable()
@@ -9,9 +8,9 @@ export class NewsService {
     private nbNews : number = 0; //for auto_incr
 
     constructor(){
-        this.newsMap.set("1",new NewsDto("1","news_1","il pleut le 20 avril 2024" , "2024-04-20T12:00:00"));
-        this.newsMap.set("2",new NewsDto("2","news_2","il fait beau le 15 mai 2024" , "2024-05-15T12:00:00"));
-        this.newsMap.set("3",new NewsDto("3","news_3","il neige le 25 janvier 2024" , "2024-01-25T12:00:00"));
+        this.newsMap.set("1",{ id:"1", title:"news_1",text:"il pleut le 20 avril 2024" ,timestamp: "2024-04-20T12:00:00"});
+        this.newsMap.set("2",{ id:"2",title:"news_2",text:"il fait beau le 15 mai 2024" ,timestamp: "2024-05-15T12:00:00"});
+        this.newsMap.set("3",{ id:"3",title:"news_3",text:"il neige le 25 janvier 2024" ,timestamp: "2024-01-25T12:00:00"});
         this.nbNews=3;
     }
 
@@ -23,7 +22,7 @@ export class NewsService {
         return this.newsMap.get(id);
     }
 
-    async create(news: NewsDto): Promise<News> {
+    async create(news: News): Promise<News> {
         let id =  (++this.nbNews).toString();
         news.id=id;
         this.newsMap.set( id, news);
