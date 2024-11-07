@@ -1,10 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('bank-api');
+ 
+  app.useGlobalPipes(new ValidationPipe()); //to validate input with @Is...() from class-validator in DTO class , plain object
+  //app.useGlobalPipes(new ValidationPipe({transform:true})); to validate and transform json input as Dto instance
   
   const swaggerConfig = new DocumentBuilder()
     .setTitle('bank api')

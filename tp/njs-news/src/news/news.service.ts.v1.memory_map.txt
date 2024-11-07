@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { News } from './news.itf';
+import { News } from './itf/news.itf';
 
 @Injectable()
 export class NewsService {

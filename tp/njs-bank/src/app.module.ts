@@ -5,8 +5,13 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CustomerEntity } from './customer/customer.entity';
-import { CustomerController } from './customer/customer.controller';
-import { CustomerService } from './customer/customer.service';
+import { AccountEntity } from './account/account.entity';
+import { OperationEntity } from './account/operation/operation.entity';
+import { classes } from '@automapper/classes';
+import { AutomapperModule } from '@automapper/nestjs';
+import { CustomerModule } from './customer/customer.module';
+import { AccountModule } from './account/account.module';
+
 
 // option synchronize:true de typeorm pour créer les tables automatiquement (dev only , not prod !!!)
 
@@ -16,6 +21,11 @@ import { CustomerService } from './customer/customer.service';
       rootPath: join(__dirname, '..', 'public') ,
       exclude: ['/bank-api/(.*)'], 
     }),
+    AutomapperModule.forRoot(
+          {
+              strategyInitializer: classes(),
+          } 
+    ),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
@@ -23,11 +33,19 @@ import { CustomerService } from './customer/customer.service';
       username: 'root',
       password: 'root',
       database: 'nestJsBankDb',
-      entities: [CustomerEntity]
+      entities: [CustomerEntity,AccountEntity ,OperationEntity]
     }),
-    TypeOrmModule.forFeature([CustomerEntity])
+    CustomerModule , AccountModule 
   ],
-  controllers: [AppController, CustomerController],
-  providers: [AppService, CustomerService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
+
+/*
+Dépendances entre modules:
+=========================
+AccountModule (with account , operation, transfer/virement)
+  dépend de CustomerModule (many-to-many)
+
+*/

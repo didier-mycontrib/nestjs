@@ -1,57 +1,81 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, UseFilters, UseInterceptors } from '@nestjs/common';
 import { NewsService } from './news.service'; 
-import { NewsDto } from './news.dto';
 import { Message } from 'src/common/message';
-import { News } from './news.itf';
-import { toNewsDto, toNewsDtoArray } from './news.mapper';
+import { NewsL1Dto, NewsL0Dto } from './dto/news.dto';
+import { ErrorExceptionFilter, HttpExceptionFilter } from 'src/common/error.exception.filter';
 
 //controller with name=news ---> localhost:3000/news or localhost:3000/news-api/news
 
 //NB: l'introspection swagger ne fonctionne bien (sur partie @body()) qu'avec une classe (ex: NewsDto)
-//mais ne fonctionne pas bien avec une interface
+//comportant des @ApiProperty() mais ne fonctionne pas bien avec une interface ou une classe sans decorateur
 
 @Controller('news')
+@UseFilters(new ErrorExceptionFilter(),new HttpExceptionFilter())
 export class NewsController {
     constructor(private readonly newsService: NewsService) {}
 
     @Get(':id')
-    async getNewsById(@Param('id') id:string): Promise<NewsDto> {
-        let news = await this.newsService.findOne(id);
-        if(news==undefined)  
-            throw new HttpException('news not found with id='+id, HttpStatus.NOT_FOUND);
-        return toNewsDto(news);
+    async getById(@Param('id') id:string): Promise<NewsL1Dto> {
+      return this.newsService.findOne(id);
     }
 
     @Get()
-    async getNewsByCriteria(): Promise<NewsDto[]> {
-        const newsArray = await this.newsService.findAll();
-        return toNewsDtoArray(newsArray);
+    //@UseInterceptors(ClassSerializerInterceptor)
+    async findByCriteria(): Promise<NewsL1Dto[]> {
+        return  this.newsService.findAll();
     }
 
     //{ "title" : "news_xyz" , "text" : "news qui va bien" , "timestamp" : "2024-04-20T12:00:00"}
     @Post()
-    async create(@Body() news: NewsDto): Promise<NewsDto> {
-        const createadNews = await this.newsService.create(news);
-        return toNewsDto(createadNews);
+    async create(@Body() news: NewsL0Dto): Promise<NewsL1Dto> {
+        return this.newsService.create(news);//returning news with generated id
      }
   
      @Delete(':id')
-     async delete(@Param('id') id:string): Promise<any> {
-       let deleteOk = await this.newsService.delete(id);
-       if(deleteOk==false)  
-            throw new HttpException('not existing news to delete with id='+id, HttpStatus.NOT_FOUND);
-       else
-          return new Message("news with id="+id + " is now deleted");
+     //@HttpCode(204) if no return json message
+     async remove(@Param('id') id:string): Promise<any> {
+       let deletedNews = await this.newsService.remove(id);
+       return new Message("news with id="+id + " is now deleted"); //with default 200/OK
+       //ErrorExceptionFilter may return NOT_FOUND if necessary
     }
   
     //{"id": "1" , "title" : "news_1" , "text" : "il pleut pas beaucoup a 15h" , "timestamp" : "2024-04-20T15:00:00"}
-    @Put(':id')
-    async update(@Body() newsToUpdate: NewsDto, @Param('id') id:string): Promise<NewsDto> {
-        let updatedNews = await  this.newsService.update(id, newsToUpdate);
-        if(updatedNews==undefined)  
-            throw new HttpException('not existing news to update with id='+id, HttpStatus.NOT_FOUND);
-        return toNewsDto(updatedNews);
+    @Put(':id') //or @Patch(':id')
+     //@HttpCode(204) if no return updeted value as json object
+    async update(@Body() newsToUpdate: NewsL1Dto, @Param('id') id:string): Promise<NewsL1Dto> {
+        return  this.newsService.update(id, newsToUpdate); //updatedNews as Promise
+        //ErrorExceptionFilter may return NOT_FOUND if necessary
     }
       
 
 }
+
+
+/************* OLD VERSIONS */
+/*
+       @Get(':id')
+       async getById(@Param('id') id:string): Promise<NewsL1Dto> {
+       
+        let news = await this.newsService.findOne(id);
+        if(news==undefined)  
+            throw new HttpException('no news for id='+id, HttpStatus.NOT_FOUND);
+        return news;
+        }
+  
+      @Get(':id')
+        async getById(@Param('id') id:string): Promise<NewsL1Dto> {
+       try{
+        let news = await this.newsService.findOne(id);
+        if(news==undefined)  
+            throw new HttpException('news not_found with id='+id, HttpStatus.NOT_FOUND);
+         else 
+          return news;
+       }catch(ex){
+              //throw new HttpException('news not found with id='+id, HttpStatus.NOT_FOUND);
+              throw new HttpException(ex.message, HttpStatus.NOT_FOUND);
+       }
+    }
+
+
+
+*/

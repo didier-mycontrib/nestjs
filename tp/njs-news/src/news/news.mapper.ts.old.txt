@@ -1,0 +1,46 @@
+import { createMap, createMapper, forMember, mapFrom } from "@automapper/core";
+import { NewsL1Dto , NewsL0Dto } from "./dto/news.dto";
+import { NewsEntity } from "./entities/news.entity";
+import { classes } from "@automapper/classes";
+/*
+const mapper = createMapper({
+    strategyInitializer: classes()
+  });
+
+  createMap(
+    mapper,
+    NewsEntity,
+    NewsL1Dto,
+    forMember(
+       d=> d.id,
+        mapFrom(s => s.id)
+    )
+);  
+*/
+
+//NB: this mapper is often usefull/necessary with nestJs and mongoose
+//because predefined api class-transformer do not managed mongoose specific structure (schema ,alias, ...)
+
+export function toNewsL1Dto(n: NewsEntity|null): NewsL1Dto|null{
+    return n==null?null:new NewsL1Dto(n.id , n.title , n.text , n.timestamp); 
+  // return n==null?null:mapper.map(n,NewsEntity,NewsL1Dto);
+}
+
+export function toNewsL1DtoArray(nArray: NewsEntity[]): NewsL1Dto[]{
+    let nDtos=[];
+    for(let n of nArray){
+        const nDto = toNewsL1Dto(n);
+        if(nDto) 
+            nDtos.push(nDto);
+    }
+    return nDtos;
+}
+
+/*
+export function fromNewsDto(n: NewsL1Dto): NewsEntity{
+    return { id: n.id ,
+            title: n.title , 
+            text: n.text , 
+            timestamp:  n.timestamp}; 
+}
+            */

@@ -16,31 +16,57 @@ exports.NewsService = void 0;
 const common_1 = require("@nestjs/common");
 const mongoose_1 = require("mongoose");
 const mongoose_2 = require("@nestjs/mongoose");
+const news_entity_1 = require("./entities/news.entity");
+const news_dto_1 = require("./dto/news.dto");
+const nestjs_1 = require("@automapper/nestjs");
 let NewsService = class NewsService {
-    constructor(newsModel) {
+    constructor(newsModel, classMapper) {
         this.newsModel = newsModel;
+        this.classMapper = classMapper;
     }
     async findAll() {
-        return this.newsModel.find().exec();
+        const newsDocArray = await this.newsModel.find().exec();
+        return this.classMapper.mapArrayAsync(newsDocArray, news_entity_1.NewsEntity, news_dto_1.NewsL1Dto);
     }
     async findOne(id) {
-        return this.newsModel.findOne({ _id: id }).exec();
+        try {
+            const newsDoc = await this.newsModel.findOne({ _id: id }).exec();
+            return this.classMapper.mapAsync(newsDoc, news_entity_1.NewsEntity, news_dto_1.NewsL1Dto);
+        }
+        catch (ex) {
+            throw new Error(`NOT_FOUND: news not found with id=${id}`);
+        }
     }
     async create(news) {
-        const persistentNewsEntity = new this.newsModel(news);
-        return persistentNewsEntity.save();
+        const newsToCreate = news;
+        const persistentNewsEntity = new this.newsModel(newsToCreate);
+        const savedNewsAsNewsEntity = await persistentNewsEntity.save();
+        return this.classMapper.mapAsync(savedNewsAsNewsEntity, news_entity_1.NewsEntity, news_dto_1.NewsL1Dto);
     }
-    async delete(id) {
-        return this.newsModel.findByIdAndDelete(id);
+    async remove(id) {
+        const doesNewsExit = await this.newsModel.exists({ _id: id });
+        if (!doesNewsExit)
+            throw new Error(`NOT_FOUND: not existing news to delete with id==${id}`);
+        try {
+            return await this.newsModel.findByIdAndDelete(id);
+        }
+        catch (ex) {
+            throw new Error(`Exception in NewsService.remove() with id==${id}`);
+        }
     }
-    async update(id, news) {
-        return this.newsModel.findByIdAndUpdate(id, news, { new: true });
+    async update(id, newsDto) {
+        const newsToUpdate = newsDto;
+        const updatedNewsAsNewsEntity = await this.newsModel.findByIdAndUpdate(id, newsToUpdate, { newsToUpdate: true });
+        if (updatedNewsAsNewsEntity == undefined)
+            throw new Error(`NOT_FOUND: not existing news to update with id=${id}`);
+        return this.classMapper.mapAsync(updatedNewsAsNewsEntity, news_entity_1.NewsEntity, news_dto_1.NewsL1Dto);
     }
 };
 exports.NewsService = NewsService;
 exports.NewsService = NewsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_2.InjectModel)('News')),
-    __metadata("design:paramtypes", [mongoose_1.Model])
+    __param(1, (0, nestjs_1.InjectMapper)()),
+    __metadata("design:paramtypes", [mongoose_1.Model, Object])
 ], NewsService);
 //# sourceMappingURL=news.service.js.map
