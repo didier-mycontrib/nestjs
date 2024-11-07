@@ -1,21 +1,25 @@
 
+import { AutoMap } from '@automapper/classes';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'; 
-import { Customer } from './customer.itf';
-import { Exclude } from 'class-transformer';
+
 
 @Entity("customer")
-export class CustomerEntity implements Customer {
+export class CustomerEntity {
   @PrimaryGeneratedColumn()
+  @AutoMap()
   id?: number;
 
   @Column()
+  @AutoMap()
   firstname: string;
 
   @Column()
+  @AutoMap()
   lastname: string;
 
   @Column()
+  @AutoMap()
   //@Exclude() //ancien test temporaire
-  email: string;
+  email?: string;
 
 }

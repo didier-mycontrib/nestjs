@@ -39,7 +39,7 @@ function insertRowCells(row,obj){
 
 
 function blankObject(){
-	return {id:"" , firstname: "" , lastname :"",email:""  };	
+	return {id:"" , firstname: "myfirstname" , lastname :"myLastName",email:"aaa.bbb@xyz.com"  };	
 }
 
 function getWsBaseUrl(){

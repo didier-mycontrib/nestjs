@@ -4,13 +4,13 @@ import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CustomerEntity } from './customer/customer.entity';
 import { AccountEntity } from './account/account.entity';
 import { OperationEntity } from './account/operation/operation.entity';
 import { classes } from '@automapper/classes';
 import { AutomapperModule } from '@automapper/nestjs';
 import { CustomerModule } from './customer/customer.module';
 import { AccountModule } from './account/account.module';
+import { CustomerEntity } from './customer/entities/customer.entity';
 
 
 // option synchronize:true de typeorm pour créer les tables automatiquement (dev only , not prod !!!)
@@ -35,7 +35,7 @@ import { AccountModule } from './account/account.module';
       database: 'nestJsBankDb',
       entities: [CustomerEntity,AccountEntity ,OperationEntity]
     }),
-    CustomerModule , AccountModule 
+    CustomerModule /*, AccountModule */
   ],
   controllers: [AppController],
   providers: [AppService],

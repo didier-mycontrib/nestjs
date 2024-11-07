@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm'; 
 import { Account } from './account.itf';
-import { Customer } from 'src/customer/customer.itf';
-import { CustomerEntity } from 'src/customer/customer.entity';
+import { CustomerEntity } from 'src/customer/entities/customer.entity';
+
 
 @Entity("account")
 export class AccountEntity implements Account {

@@ -1,43 +1,56 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { Customer } from "./customer.itf";
 import { IsEmail, IsNotEmpty } from "class-validator";
 import { Exclude, Expose } from "class-transformer";
-import { normalize } from "path";
+import { AutoMap } from "@automapper/classes";
+
 
 //NB: @ApiProperty() est nécessaire pour une bonne compréhension du schema/DTO par swagger
 
-export class CustomerDto implements Customer {
+export class CustomerL0Dto  {
 
-  @ApiProperty()
-  public id?:number;
-
-  @ApiProperty()
+  @ApiProperty({default:'myFirstname'})
   @IsNotEmpty()
+  @AutoMap()
   //@Expose({name:"prenom"}) //ancien test temporaire
   public firstname: string;
 
-  @ApiProperty()
+  @ApiProperty({default:'myLastname'})
   @IsNotEmpty()
+  @AutoMap()
   public lastname: string;
 
-  @ApiProperty()
+  @ApiProperty({required:false,default:'aaa.bbb@xyz.com'})
   @IsEmail()
+  @AutoMap()
   //@Exclude()  //ancien test temporaire
-  public email: string;
+  public email?: string;
 
-  @Expose({name:"mot_de_passe"})
-  public password? : string = "pwd007";
+  //@Expose({name:"mot_de_passe"})  //ancien test temporaire
+  //public password? : string = "pwd007";
 
-  constructor( id:number,firstname: string,lastname: string,email:string ){
-    this.id=id ; this.firstname=firstname; this.lastname=lastname;this.email=email
+  constructor( firstname: string="myFirtname",lastname: string="myLastname",email:string ='aaa.bbb@xyz.com'){
+    this.firstname=firstname; this.lastname=lastname;this.email=email
+  }
+
+  }
+
+  export class CustomerL1Dto  extends CustomerL0Dto{
+    @ApiProperty()
+    @AutoMap()
+    public id?:number;
+
+    constructor( id:number,firstname: string,lastname: string,email:string ){
+      super(firstname,lastname,email);
+      this.id=id;
+    }
   }
 
  
 
-  }
+  
 
    //juste pour tester les fonctionnalités de class-transformer:
-  export class CustomerDtoEx extends CustomerDto{
+  export class CustomerDtoEx extends CustomerL1Dto{
 
     constructor( id:number,firstname: string,lastname: string,email:string ){
       super(id,firstname,lastname,email);
