@@ -1,17 +1,20 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, ManyToMany, JoinTable } from 'typeorm'; 
-import { Account } from './account.itf';
 import { CustomerEntity } from 'src/customer/entities/customer.entity';
+import { AutoMap } from '@automapper/classes';
 
 
 @Entity("account")
-export class AccountEntity implements Account {
+export class AccountEntity  {
   @PrimaryGeneratedColumn()
-  num: number;
+  @AutoMap()
+  num?: number;
 
   @Column()
+  @AutoMap()
   label: string;
 
   @Column()
+  @AutoMap()
   balance: number;
 
   /*
@@ -27,6 +30,7 @@ export class AccountEntity implements Account {
     joinColumn: { name: 'account_num' },
     inverseJoinColumn: {  name: 'customer_id' }
    })
-   owners : CustomerEntity[];
+   @AutoMap()
+   owners? : CustomerEntity[];
 
 }

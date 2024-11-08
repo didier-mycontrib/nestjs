@@ -1,8 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { TransferRequest, TransferResponse } from './dto/transfer.dto';
 import { TransferService } from './transfer.service';
-import { TransferRequest, TransferResponse } from './transfer.dto';
+
 
 @Controller('transfers') //virements
+//@UseFilters(new ErrorExceptionFilter(),new HttpExceptionFilter())
 export class TransferController {
 
     constructor(private readonly transferService: TransferService) {

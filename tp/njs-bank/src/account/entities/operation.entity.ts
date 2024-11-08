@@ -1,25 +1,28 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm'; 
-
-
-import { AccountEntity } from '../account.entity';
-import { Operation } from './operation.itf';
+import { AutoMap } from '@automapper/classes';
+import { AccountEntity } from './account.entity';
 
 @Entity("operation")
-export class OperationEntity implements Operation {
+export class OperationEntity  {
   @PrimaryGeneratedColumn()
-  id: number;
+  @AutoMap()
+  id?: number;
 
   @Column()
+  @AutoMap()
   label: string;
 
   @Column()
+  @AutoMap()
   amount: number;
 
   @Column()
+  @AutoMap()
   opDateTime: Date;
 
   @ManyToOne(()=> AccountEntity , account => account.num)
   @JoinColumn({name:'account_num'})
+  @AutoMap()
   account : AccountEntity;
 
 }

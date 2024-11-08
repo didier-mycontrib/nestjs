@@ -6,7 +6,6 @@ import { InjectMapper } from '@automapper/nestjs';
 import { CustomerEntity } from './entities/customer.entity';
 import { CustomerL0Dto, CustomerL1Dto } from './dto/customer.dto';
 
-//NB: no need of  "@types/mongodb" after version "4.0.7"
 
 @Injectable()
 export class CustomerService {
@@ -38,8 +37,8 @@ export class CustomerService {
       async create(customerDto: CustomerL0Dto): Promise<CustomerL1Dto> {
         const customerToCreate = customerDto; // compatible in simple case , more simple/efficient
         //const customerToCreate = this.classMapper.map(customerDto,CustomerL0Dto,CustomerEntity); //ok
-        const savedCustomerAsNewsEntity = await this.customerRepository.save(customerToCreate);
-        return this.classMapper.mapAsync(savedCustomerAsNewsEntity,CustomerEntity,CustomerL1Dto);
+        const savedCustomerAsEntity = await this.customerRepository.save(customerToCreate);
+        return this.classMapper.mapAsync(savedCustomerAsEntity,CustomerEntity,CustomerL1Dto);
       }
 
       async _throwNotFoundErrorInNotExists(id:number,messagePart:string){
