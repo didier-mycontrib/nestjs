@@ -1,3 +1,9 @@
+Variantes:
+--------
+njs-news : avec mongoose et avec standalone_jwt
+njs-news2 : avec typeorm/MongoDB et oauth2/oidc via passport
+njs-bank : avec typeorm/MySQL/mariaDB
+================================
 npm i -g @nestjs/cli
 nest new project-name --strict
 ====================
@@ -9,6 +15,12 @@ npm install -s class-transformer
 npm install -s class-validator
 
 ====================
+
+npm install --save --legacy-peer-deps bcrypt
+npm install --save-dev --legacy-peer-deps @types/bcrypt
+
+ npm install --save --legacy-peer-deps @nestjs/jwt
+
 
 npm install --save --legacy-peer-deps @automapper/core @automapper/classes @automapper/nestjs @automapper/types
 =====

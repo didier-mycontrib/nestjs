@@ -18,6 +18,8 @@ const news_service_1 = require("./news.service");
 const message_1 = require("../common/message");
 const news_dto_1 = require("./dto/news.dto");
 const error_exception_filter_1 = require("../common/error.exception.filter");
+const public_decorator_1 = require("../auth/public.decorator");
+const rolesOrScope_decorator_1 = require("../auth/rolesOrScope.decorator");
 let NewsController = class NewsController {
     constructor(newsService) {
         this.newsService = newsService;
@@ -29,6 +31,7 @@ let NewsController = class NewsController {
         return this.newsService.findAll();
     }
     async create(news) {
+        console.log("post/create newsDto=" + JSON.stringify(news));
         return this.newsService.create(news);
     }
     async remove(id) {
@@ -42,6 +45,7 @@ let NewsController = class NewsController {
 exports.NewsController = NewsController;
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, public_decorator_1.Public)(),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -49,12 +53,14 @@ __decorate([
 ], NewsController.prototype, "getById", null);
 __decorate([
     (0, common_1.Get)(),
+    (0, public_decorator_1.Public)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], NewsController.prototype, "findByCriteria", null);
 __decorate([
     (0, common_1.Post)(),
+    (0, rolesOrScope_decorator_1.HasScopes)("resource.write"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [news_dto_1.NewsL0Dto]),

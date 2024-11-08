@@ -119,7 +119,7 @@ function refreshAll(){
 	selectedRow = null;
 	makeAjaxGetRequest(wsUrl,function(responseJson){
 		let objectListJs = JSON.parse(responseJson);
-		console.log("objectListJs="+objectListJs);
+		console.log("objectListJs="+JSON.stringify(objectListJs));
 		
 		let bodyElt = document.getElementById("table_body");
 		bodyElt.innerHTML="";//vider le tableau avant de le re-remplir

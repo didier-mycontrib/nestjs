@@ -3,6 +3,8 @@ import { NewsService } from './news.service';
 import { Message } from 'src/common/message';
 import { NewsL1Dto, NewsL0Dto } from './dto/news.dto';
 import { ErrorExceptionFilter, HttpExceptionFilter } from 'src/common/error.exception.filter';
+import { Public } from 'src/auth/public.decorator';
+import { HasScopes } from 'src/auth/rolesOrScope.decorator';
 
 //controller with name=news ---> localhost:3000/news or localhost:3000/news-api/news
 
@@ -15,11 +17,13 @@ export class NewsController {
     constructor(private readonly newsService: NewsService) {}
 
     @Get(':id')
+    @Public()
     async getById(@Param('id') id:string): Promise<NewsL1Dto> {
       return this.newsService.findOne(id);
     }
 
     @Get()
+    @Public()
     //@UseInterceptors(ClassSerializerInterceptor)
     async findByCriteria(): Promise<NewsL1Dto[]> {
         return  this.newsService.findAll();
@@ -27,7 +31,9 @@ export class NewsController {
 
     //{ "title" : "news_xyz" , "text" : "news qui va bien" , "timestamp" : "2024-04-20T12:00:00"}
     @Post()
+    @HasScopes("resource.write")
     async create(@Body() news: NewsL0Dto): Promise<NewsL1Dto> {
+        console.log("post/create newsDto="+JSON.stringify(news));
         return this.newsService.create(news);//returning news with generated id
      }
   
