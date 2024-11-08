@@ -13,7 +13,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         const response = ctx.getResponse<Response>();
         //const request = ctx.getRequest<Request>();
         const status = exception.getStatus();
-    
+        console.log("*** exception catched by HttpExceptionFilter:"+exception.message + " " + exception.stack);
         response
           .status(status)
           .json({
@@ -31,9 +31,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 @Catch(Error)
 export class ErrorExceptionFilter implements ExceptionFilter {
   catch(error: Error, host: ArgumentsHost) {
-
-    console.log("**** ErrorExceptionFilter ****")
-
+    console.log("*** error catched by ErrorExceptionFilter:"+error.message + " " + error.stack);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     //const request = ctx.getRequest<Request>();

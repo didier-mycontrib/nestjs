@@ -30,7 +30,7 @@ export class AccountEntity  {
     joinColumn: { name: 'account_num' },
     inverseJoinColumn: {  name: 'customer_id' }
    })
-   @AutoMap()
+   //@AutoMap()
    owners? : CustomerEntity[];
 
 }

@@ -24,7 +24,7 @@ export class OperationService {
 
      async findByAccountNum(accountNum:number): Promise<OperationL1Dto[]> {
         const opEntityArray= await this.operationRepository.find({
-         // relations: {account:true },
+           relations: {account:true }, //fetch operation with related/linked account
            where : {
                 account :{
                    num : accountNum
@@ -36,7 +36,11 @@ export class OperationService {
 
       async findOne(id: number):Promise<OperationL1Dto>{
         try{ 
-           const operationEntity = await this.operationRepository.findOneBy({ id }); 
+          // const operationEntity = await this.operationRepository.findOneBy({ id }); //fetch operation without related account
+          const operationEntity = await this.operationRepository.findOne({
+            relations: {account:true }, //fetch operation with related/linked account
+             where : { id : id  } 
+           });
            if(operationEntity==null)
                throw new Error(`NOT_FOUND: Operation not found with id=${id}`);
            else

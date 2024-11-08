@@ -17,7 +17,7 @@ export class OperationL0Dto {
     opDateTime:Date;
 
     @ApiProperty()
-    @AutoMap()
+    //@AutoMap()
     accountId?:number;
   
   }

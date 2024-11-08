@@ -19,7 +19,9 @@ export class AccountMapperProfile extends AutomapperProfile {
       createMap(mapper, AccountEntity,AccountL1Dto);
       createMap(mapper, OperationL0Dto,OperationEntity);
       createMap(mapper, OperationL1Dto,OperationEntity);
-      createMap(mapper, OperationEntity,OperationL1Dto);
+      createMap(mapper, OperationEntity,OperationL1Dto        ,
+        forMember( d=> d.accountId, mapFrom(s => s.account?.num))
+      );
     };
   }
 }
