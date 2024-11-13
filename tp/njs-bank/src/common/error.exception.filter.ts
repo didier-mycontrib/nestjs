@@ -1,8 +1,20 @@
 
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import { Request, Response } from 'express';
+import {  Response } from 'express';
 
+/*
+//NB: without parameters , @Catch() will handle any exception
+//in main.ts:
+//const { httpAdapter } = app.get(HttpAdapterHost);
+//app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+@Catch()
+export class AllExceptionsFilter extends BaseExceptionFilter {
+  catch(exception: unknown, host: ArgumentsHost) {
+    super.catch(exception, host); //super.catch() is important !!!!
+  }
+}
+*/
 
 //pour traiter throw new HttpException('no yyy for id='+id, HttpStatus.NOT_FOUND);
 //ou bien throw new HttpException('yyy', HttpStatus.YYYY);

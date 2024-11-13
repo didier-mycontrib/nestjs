@@ -1,4 +1,4 @@
-import { Body ,Controller,Delete, Get, HttpException, HttpStatus, Param, Post, Put, UseFilters, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body ,ClassSerializerInterceptor,Controller,Delete, Get, HttpException, HttpStatus, Param, Post, Put, UseFilters, UseInterceptors, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { Message } from 'src/common/message';
 import { ApiResponse } from '@nestjs/swagger';
@@ -32,7 +32,7 @@ export class CustomerController {
 
     //{ "firstName" : "prenom_x" , "lastname" : "nom_y" }
     @Post()
-    //@UsePipes(new ValidationPipe({ transform: true }))
+    @UsePipes(new ValidationPipe({ transform: true }))
     async create(@Body() c: CustomerL0Dto): Promise<CustomerL1Dto> {
         //console.log("CustomerController.create() with c = " + JSON.stringify(c));
         console.log( 'In CustomerController.create() typeof c = ' + typeof c);
