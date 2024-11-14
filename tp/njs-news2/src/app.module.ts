@@ -7,6 +7,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
 import { NewsModule } from './news/news.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard, PassportModule } from '@nestjs/passport';
+import { OAuthStrategy } from './common/oauth.stategy';
+import { ScopesGuard } from './common/scopes.guard';
+import { MyPublicPrivateAuthGuard } from './common/my-auth.guard';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -31,9 +37,21 @@ import { NewsModule } from './news/news.module';
       autoLoadEntities: true,
      /* synchronize: true,*/
     }),
-    NewsModule
+    PassportModule,
+    NewsModule,
+    AuthModule.forRoot({enableGlobalSecurity:true})
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService , OAuthStrategy,
+    {
+      provide: APP_GUARD,
+      /*useClass: AuthGuard('myOauthKeycloakStrategy'),*/ 
+      useClass:  MyPublicPrivateAuthGuard //401 if no valid token , ...
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ScopesGuard,  //403 if no valid scope
+    }
+    ],
 })
 export class AppModule {}

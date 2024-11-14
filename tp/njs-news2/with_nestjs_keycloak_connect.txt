@@ -1,0 +1,80 @@
+Problèmes de paramétrages (roles, scopes / resources ) avec version actuelle de Keycloak .
+===================
+ "nest-keycloak-connect": "^1.10.1",
+ "keycloak-connect": "^26.0.5",
+====================
+
+KeycloakConnectModule.register({
+      authServerUrl: 'https://www.d-defrance.fr/keycloak',
+      realm: 'sandboxrealm',
+      clientId: 'anywebappclient',
+      secret: '',
+      logLevels: ['warn'],
+      //policyEnforcement: PolicyEnforcementMode.ENFORCING,// optional
+      policyEnforcement: PolicyEnforcementMode.PERMISSIVE, // optional
+      //tokenValidation: TokenValidation.ONLINE, // optional
+      tokenValidation: TokenValidation.OFFLINE,// optional
+    }),
+
+providers: [AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,  //401 if no valid token
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ResourceGuard, //403 if no required scopes (via predefined @Scopes if in @Resouce Controller)
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard, //Permissive by default. Used by controller methods annotated with @Roles
+    }
+  ],
+====================
+import { Resource, RoleMatchingMode, RoleMerge, Roles, Scopes } from 'nest-keycloak-connect';
+
+@Controller('news')
+//@Resource('/*') // ??
+@UseFilters(new ErrorExceptionFilter(),new HttpExceptionFilter())
+export class NewsController {
+    constructor(private readonly newsService: NewsService) {}
+
+    @Get(':id')
+    async getById(@Param('id') id:string): Promise<NewsL1Dto> {
+      return this.newsService.findOne(id);
+    }
+
+    @Get()
+    //@UseInterceptors(ClassSerializerInterceptor)
+    async findByCriteria(): Promise<NewsL1Dto[]> {
+        return  this.newsService.findAll();
+    }
+
+    //{ "title" : "news_xyz" , "text" : "news qui va bien" , "timestamp" : "2024-04-20T12:00:00"}
+    @Post()
+   // @Scopes('resource.write')
+    async create(@Body() news: NewsL0Dto): Promise<NewsL1Dto> {
+        return this.newsService.create(news);//returning news with generated id
+     }
+  
+     @Delete(':id')
+     //@Scopes('resource.delete')
+     //@HttpCode(204) if no return json message
+     async remove(@Param('id') id:string): Promise<any> {
+       let deletedNews = await this.newsService.remove(id);
+       return new Message("news with id="+id + " is now deleted"); //with default 200/OK
+       //ErrorExceptionFilter may return NOT_FOUND if necessary
+    }
+  
+    //{"id": "1" , "title" : "news_1" , "text" : "il pleut pas beaucoup a 15h" , "timestamp" : "2024-04-20T15:00:00"}
+    @Put(':id') //or @Patch(':id')
+    //@Scopes('resource.write')
+    @Roles({roles:['ADMIN_CRUD'] , mode :RoleMatchingMode.ANY })
+     //@HttpCode(204) if no return updeted value as json object
+    async update(@Body() newsToUpdate: NewsL1Dto, @Param('id') id:string): Promise<NewsL1Dto> {
+        return  this.newsService.update(id, newsToUpdate); //updatedNews as Promise
+        //ErrorExceptionFilter may return NOT_FOUND if necessary
+    }
+      
+
+}

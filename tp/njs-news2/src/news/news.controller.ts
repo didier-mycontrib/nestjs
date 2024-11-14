@@ -3,6 +3,8 @@ import { NewsService } from './news.service';
 import { Message } from 'src/common/message';
 import { NewsL1Dto, NewsL0Dto } from './dto/news.dto';
 import { ErrorExceptionFilter, HttpExceptionFilter } from 'src/common/error.exception.filter';
+import { HasScopes } from 'src/common/rolesOrScope.decorator';
+import { Public } from 'src/common/public.decorator';
 
 //controller with name=news ---> localhost:3000/news or localhost:3000/news-api/news
 
@@ -15,11 +17,13 @@ export class NewsController {
     constructor(private readonly newsService: NewsService) {}
 
     @Get(':id')
+    @Public()
     async getById(@Param('id') id:string): Promise<NewsL1Dto> {
       return this.newsService.findOne(id);
     }
 
     @Get()
+    @Public()
     //@UseInterceptors(ClassSerializerInterceptor)
     async findByCriteria(): Promise<NewsL1Dto[]> {
         return  this.newsService.findAll();
@@ -27,11 +31,13 @@ export class NewsController {
 
     //{ "title" : "news_xyz" , "text" : "news qui va bien" , "timestamp" : "2024-04-20T12:00:00"}
     @Post()
+    @HasScopes("resource.write")
     async create(@Body() news: NewsL0Dto): Promise<NewsL1Dto> {
         return this.newsService.create(news);//returning news with generated id
      }
   
      @Delete(':id')
+     @HasScopes("resource.delete")
      //@HttpCode(204) if no return json message
      async remove(@Param('id') id:string): Promise<any> {
        let deletedNews = await this.newsService.remove(id);
@@ -41,6 +47,7 @@ export class NewsController {
   
     //{"id": "1" , "title" : "news_1" , "text" : "il pleut pas beaucoup a 15h" , "timestamp" : "2024-04-20T15:00:00"}
     @Put(':id') //or @Patch(':id')
+    @HasScopes("resource.write")
      //@HttpCode(204) if no return updeted value as json object
     async update(@Body() newsToUpdate: NewsL1Dto, @Param('id') id:string): Promise<NewsL1Dto> {
         return  this.newsService.update(id, newsToUpdate); //updatedNews as Promise
