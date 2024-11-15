@@ -12,7 +12,7 @@ const users_service_1 = require("./users.service");
 const users_controller_1 = require("./users.controller");
 const mongoose_1 = require("@nestjs/mongoose");
 const users_entity_1 = require("./entities/users.entity");
-const news_mapper_profile_1 = require("./mapper/news.mapper.profile");
+const users_mapper_profile_1 = require("./mapper/users.mapper.profile");
 let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;
@@ -22,7 +22,7 @@ exports.UsersModule = UsersModule = __decorate([
             mongoose_1.MongooseModule.forFeature([{ name: "Users", schema: users_entity_1.UserSchema }]),
         ],
         exports: [users_service_1.UsersService],
-        providers: [users_service_1.UsersService, news_mapper_profile_1.UserMapperProfile],
+        providers: [users_service_1.UsersService, users_mapper_profile_1.UserMapperProfile],
         controllers: [users_controller_1.UsersController]
     })
 ], UsersModule);

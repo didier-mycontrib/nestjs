@@ -19,10 +19,27 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('news-api/api', app, document); //http://localhost:3000/news-api/api
 
-
+  //setGlobalAppAccess(app);
 
   await app.listen(process.env.PORT ?? 3000);
   //http://localhost:3000/news-api avec AppController et AppService 
   //http://localhost:3000 ou http://localhost:3000/index.html avec ServeStaticModule
 }
 bootstrap();
+
+
+/*
+in main.ts : setGlobalAppAccess(app);
+
+in other part of nestJs app: 
+
+var globalApp : INestApplication;
+export function setGlobalAppAccess(app: INestApplication) {
+  globalApp = app;
+}
+
+...
+
+const XyzService: xyzService = await globalApp.resolve(XyzService);
+...
+*/

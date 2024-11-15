@@ -1,13 +1,20 @@
 
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, Inject } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { HAS_SCOPE_KEY } from './rolesOrScope.decorator';
+import { HAS_SCOPE_KEY } from '../auth/rolesOrScope.decorator';
+import { AUTH_MODULE_OPTIONS_TOKEN, ConfigAuthModuleOptions } from './auth.mod.def';
 
 @Injectable()
 export class ScopesGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private reflector: Reflector,
+    @Inject(AUTH_MODULE_OPTIONS_TOKEN)
+     private _moduleOptions: ConfigAuthModuleOptions) {}
 
   canActivate(context: ExecutionContext): boolean {
+
+    if(this._moduleOptions.enableGlobalSecurity==false)
+      return true; //because security is globally desactivated (from app.module config)
+
     const requiredScopes = this.reflector.getAllAndOverride<string[]>(HAS_SCOPE_KEY, [
       context.getHandler(),
       context.getClass(),

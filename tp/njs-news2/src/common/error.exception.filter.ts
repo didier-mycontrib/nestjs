@@ -1,18 +1,23 @@
 
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, UnauthorizedException, Inject } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
-
 
 //pour traiter throw new HttpException('no yyy for id='+id, HttpStatus.NOT_FOUND);
 //ou bien throw new HttpException('yyy', HttpStatus.YYYY);
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
+
+  constructor() {}
+
     catch(exception: HttpException, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
-        //const request = ctx.getRequest<Request>();
+        const request = ctx.getRequest<Request>();
         const status = exception.getStatus();
+ 
+     console.log("**** HttpExceptionFilter ****")
     
         response
           .status(status)

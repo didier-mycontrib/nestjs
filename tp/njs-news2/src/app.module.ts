@@ -7,12 +7,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AutomapperModule } from '@automapper/nestjs';
 import { classes } from '@automapper/classes';
 import { NewsModule } from './news/news.module';
-import { APP_GUARD } from '@nestjs/core';
-import { AuthGuard, PassportModule } from '@nestjs/passport';
-import { OAuthStrategy } from './common/oauth.stategy';
-import { ScopesGuard } from './common/scopes.guard';
-import { MyPublicPrivateAuthGuard } from './common/my-auth.guard';
 import { AuthModule } from './auth/auth.module';
+import { getIsOauth2EnabledCongifServiceConfigService } from './auth/IsOauth2EnabledCongifService';
+import { UsersModule } from './users/users.module';
+import { UserEntity } from './users/entities/users.entity';
+import { NewsEntity } from './news/entities/news.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from './auth/constants';
 
 @Module({
   imports: [
@@ -34,24 +35,31 @@ import { AuthModule } from './auth/auth.module';
       database: process.env.DB_DATABASE??'news',
       /*ssl: true,*/
 
+      entities: [UserEntity,NewsEntity] ,
+
       autoLoadEntities: true,
      /* synchronize: true,*/
     }),
-    PassportModule,
+    JwtModule.register({
+      global: true,
+      secret: jwtConstants.secret,
+      signOptions: { expiresIn: '600s' },
+    }),
+    UsersModule,
     NewsModule,
-    AuthModule.forRoot({enableGlobalSecurity:true})
+    
+    AuthModule.forRootAsync( 
+      {
+        useFactory : async () => {
+           const configService = await getIsOauth2EnabledCongifServiceConfigService(
+             "https://www.d-defrance.fr/keycloak/realms/sandboxrealm/.well-known/openid-configuration");
+           return  {enableGlobalSecurity:true ,
+                     isOauth2Enabled:  configService.get('isOauth2Enabled') }
+           } , 
+      }
+    )
   ],
   controllers: [AppController],
-  providers: [AppService , OAuthStrategy,
-    {
-      provide: APP_GUARD,
-      /*useClass: AuthGuard('myOauthKeycloakStrategy'),*/ 
-      useClass:  MyPublicPrivateAuthGuard //401 if no valid token , ...
-    },
-    {
-      provide: APP_GUARD,
-      useClass: ScopesGuard,  //403 if no valid scope
-    }
-    ],
+  providers: [AppService ]
 })
 export class AppModule {}

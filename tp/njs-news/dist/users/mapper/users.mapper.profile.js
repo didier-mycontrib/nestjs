@@ -36,4 +36,4 @@ exports.UserMapperProfile = UserMapperProfile = __decorate([
     __param(0, (0, nestjs_1.InjectMapper)()),
     __metadata("design:paramtypes", [Object])
 ], UserMapperProfile);
-//# sourceMappingURL=news.mapper.profile.js.map
+//# sourceMappingURL=users.mapper.profile.js.map

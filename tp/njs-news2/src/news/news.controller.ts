@@ -3,8 +3,8 @@ import { NewsService } from './news.service';
 import { Message } from 'src/common/message';
 import { NewsL1Dto, NewsL0Dto } from './dto/news.dto';
 import { ErrorExceptionFilter, HttpExceptionFilter } from 'src/common/error.exception.filter';
-import { HasScopes } from 'src/common/rolesOrScope.decorator';
-import { Public } from 'src/common/public.decorator';
+import { HasScopes } from 'src/auth/rolesOrScope.decorator';
+import { Public } from 'src/auth/public.decorator';
 
 //controller with name=news ---> localhost:3000/news or localhost:3000/news-api/news
 

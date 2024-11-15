@@ -1,48 +1,38 @@
-import { ConfigurableModuleBuilder, DynamicModule, Module } from '@nestjs/common';
-import axios from 'axios';
+import { Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
+import { MyCompositeStrategy } from './composite.stategy';
+import { MyPublicPrivateAuthGuard } from './my-auth.guard';
+import { ScopesGuard } from './scopes.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthConfigurableModuleClass } from './auth.mod.def';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
+import { UsersModule } from 'src/users/users.module';
+import { FirstPhaseJwtAuthGuard } from './first_phase_standalone_auth.gard';
 
-async function tryingOidcServerConnection(wellKnownOpenidConfigUrl:string){
-    try{
-      const response  = await axios.get(wellKnownOpenidConfigUrl);                           
-      console.log("wellKnownOpenidConfigUrl="+wellKnownOpenidConfigUrl+ " response.status : ", + response.status);
-     }catch(ex){
-         //console.log("exception ex as JSON string:" + JSON.stringify(ex));
-         throw ex;
-    }
-  }
-
-  
-export interface ConfigAuthModuleOptions {
-    enableGlobalSecurity: boolean;
-  }
-
-const authConfigurableModuleHost =  new ConfigurableModuleBuilder<ConfigAuthModuleOptions>()
-                                    .setClassMethodName('forRoot').build();  
-export const AuthConfigurableModuleClass = authConfigurableModuleHost.ConfigurableModuleClass;
+export const IS_OAUTH2_ENABLED="IS_OAUTH2_ENABLED";
   
 
-/*
-DynamicModule usages:
-XyDynModule.register(conf) is used to register an config for just one calling module
-XyDynModule.forRoot(conf) is used to register an shared config for all calling modules
-XyDynModule.forFeature(conf) is used to register an ultra specific config for one calling modules
-=====
-simple static register(conf) { ...} is easy to code directy
-.forRoot(conf) or .forFeature(conf) may be code via the ConfigurableModuleBuilder factory
-*/  
-
-@Module({})
-export class AuthModule extends AuthConfigurableModuleClass {
-    static forRoot(options: ConfigAuthModuleOptions): DynamicModule {
-        console.log(">>>> AuthModule.forRoot() with options=" + JSON.stringify(options));
-        tryingOidcServerConnection("https://www.d-defrance.fr/keycloak/realms/sandboxrealm/.well-known/openid-configuration");
-        return {
-            
-          // your custom logic here
-          ...super.forRoot(options),
-        };
+@Module({ 
+    imports: [PassportModule,UsersModule],
+    providers:[ MyCompositeStrategy,AuthService,
+      {
+        provide: APP_GUARD,
+        useClass:  FirstPhaseJwtAuthGuard //trying loading standalone jwt , just storing valid_standalone_jwt=true in request if succeed
+      },
+      {
+        provide: APP_GUARD,
+        useClass:  MyPublicPrivateAuthGuard //401 if no valid oauth2/keycloak token , ok if valid_standalone_jwt=true already in request
+      },
+     {
+        provide: APP_GUARD,
+        useClass: ScopesGuard,  //403 if no valid scope
       }
-}
+      ],
+      controllers:[AuthController]
+  })
+export class AuthModule extends AuthConfigurableModuleClass{}
+
 
 
 //******OLD CODE***************************
